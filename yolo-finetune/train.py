@@ -42,4 +42,34 @@ RUN_NAME    = cfg["run_name"]
 SEED        = cfg["seed"]
 VAL_SPLIT   = cfg["val_split"]
 # ---------------------------------------------------------------------------
+def make_split():
+    """Scan disk for image/label pairs and write 80/20 split list files."""
+    exts = {".jpg", ".jpeg", ".png"}
+    images = sorted(
+        f.name for f in IMAGES_DIR.iterdir()
+        if f.suffix.lower() in exts
+        and (LABELS_DIR / (f.stem + ".txt")).exists()
+    )
+    if not images:
+        raise FileNotFoundError(
+            f"No image/label pairs found.\n"
+            f"  images_dir: {IMAGES_DIR}\n"
+            f"  labels_dir: {LABELS_DIR}"
+        )
+
+    random.seed(SEED)
+    random.shuffle(images)
+    split = int((1 - VAL_SPLIT) * len(images))
+    train_imgs, val_imgs = images[:split], images[split:]
+
+    def write(path, img_list):
+        with open(path, "w") as f:
+            for img in img_list:
+                f.write(f"./data/images/{img}\n")
+
+    write(TRAIN_FILE, train_imgs)
+    write(VAL_FILE,   val_imgs)
+    print(f"[split] Train: {len(train_imgs)}  Val: {len(val_imgs)}  "
+          f"(total matched pairs: {len(images)})")
+    return len(train_imgs), len(val_imgs)
 
