@@ -9,30 +9,37 @@ Steps:
 
 Run from the project root:
     python train.py
+    will run with config.yaml file, to override the default config.yaml and to use the custom run
+    python train.py --config config_2version.yaml
 """
 import os
 import random
 import json
-from pathlib import path
+from pathlib import Path
+import yaml
 
 # ---------------------------------------------------------------------------
-# Config — edit these as needed
+# Config — edit config.yaml
 # ---------------------------------------------------------------------------
-ROOT        = Path(__file__).parent.resolve()
-IMAGES_DIR  = ROOT / "data" / "images"
-LABELS_DIR  = ROOT / "data" / "labels"
-WEIGHTS     = ROOT / "model" / "yolo8m.pt"
-YAML        = ROOT / "sh17_kaggle.yaml"
-TRAIN_FILE  = ROOT / "train_files.txt"
-VAL_FILE    = ROOT / "val_files.txt"
+ROOT = Path(__file__).parent.resolve()
 
-EPOCHS      = 1
-IMG_SIZE    = 320
-BATCH       = 8          # lower batch for CPU; raise to 16 if you have GPU RAM
-DEVICE      = "cpu"      # "cuda:0" if GPU is available
+with open(ROOT / "config.yaml") as f:
+    cfg = yaml.safe_load(f)
+
+IMAGES_DIR  = ROOT / cfg["images_dir"]
+LABELS_DIR  = ROOT / cfg["labels_dir"]
+WEIGHTS     = ROOT / cfg["weights"]
+YAML        = ROOT / cfg["dataset_yaml"]
+TRAIN_FILE  = ROOT / cfg["train_file"]
+VAL_FILE    = ROOT / cfg["val_file"]
+
+EPOCHS      = cfg["epochs"]
+IMG_SIZE    = cfg["img_size"]
+BATCH       = cfg["batch"]
+DEVICE      = cfg["device"]
 PROJECT     = ROOT / "runs"
-RUN_NAME    = "sh17_yolo8m"
-SEED        = 42
-VAL_SPLIT   = 0.2
+RUN_NAME    = cfg["run_name"]
+SEED        = cfg["seed"]
+VAL_SPLIT   = cfg["val_split"]
 # ---------------------------------------------------------------------------
 

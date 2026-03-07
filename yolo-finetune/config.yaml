@@ -1,0 +1,16 @@
+# Paths (relative to train.py location)
+images_dir: data/images
+labels_dir: data/labels
+weights: model/yolo8m.pt
+dataset_yaml: sh17_kaggle.yaml
+train_file: train_files.txt
+val_file: val_files.txt
+
+# Training
+epochs: 1
+img_size: 320
+batch: 8        # lower for CPU; raise to 16 with GPU RAM
+device: cpu     # "cuda:0" if GPU available
+run_name: sh17_yolo8m
+seed: 42
+val_split: 0.2
