@@ -4,7 +4,7 @@ import shutil
 import sys
 import tempfile
 
-from fastapi import FastAPI, UploadFile, File, Body
+from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import StreamingResponse
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -24,13 +24,6 @@ violations_store = {}  # key: (track_id, violation_type) → latest violation
 @app.get("/health")
 def health():
     return {"status": "ok"}
-
-
-@app.post("/violations")
-def receive_violation(violation: dict = Body(...)):
-    key = (violation["track_id"], violation["violation_type"])
-    violations_store[key] = violation
-    return {"status": "received"}
 
 
 @app.get("/violations")
@@ -61,6 +54,8 @@ def run(file: UploadFile = File(...)):
     def stream():
         try:
             for violation in run_pipeline(tmp_path, model, cfg):
+                key = (violation["track_id"], violation["violation_type"])
+                violations_store[key] = violation
                 yield json.dumps(violation) + "\n"
         finally:
             os.unlink(tmp_path)
