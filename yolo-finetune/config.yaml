@@ -1,8 +1,8 @@
 # Paths (relative to train.py location)
 images_dir: data/images
 labels_dir: data/labels
-weights: model/yolo8m.pt
-dataset_yaml: sh17_kaggle.yaml
+weights: models/yolo8m.pt
+dataset_yaml: sh17-kaggle.yaml
 train_file: train_files.txt
 val_file: val_files.txt
 
