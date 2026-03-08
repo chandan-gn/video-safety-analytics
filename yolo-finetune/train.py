@@ -73,3 +73,85 @@ def make_split():
           f"(total matched pairs: {len(images)})")
     return len(train_imgs), len(val_imgs)
 
+def train():
+    from ultralytics import YOLO
+
+    print("\n[train] Loading weights:", WEIGHTS)
+    model = YOLO(str(WEIGHTS))
+
+    results = model.train(
+        data=str(YAML),
+        epochs=EPOCHS,
+        imgsz=IMG_SIZE,
+        batch=BATCH,
+        device=DEVICE,
+        project=str(PROJECT),
+        name=RUN_NAME,
+        exist_ok=True,          # resume / overwrite same run folder
+        seed=SEED,
+        val=True,               # run validation each epoch
+        save=True,              # save best.pt and last.pt
+        plots=True,             # save training curves
+        verbose=True,
+    )
+    return results
+
+def validate(weights_path):
+    from ultralytics import YOLO
+
+    print(f"\n[validate] Evaluating {weights_path}")
+    model = YOLO(str(weights_path))
+    metrics = model.val(
+        data=str(YAML),
+        imgsz=IMG_SIZE,
+        batch=BATCH,
+        device=DEVICE,
+        split="val",
+        plots=True,
+        verbose=True,
+    )
+    return metrics
+
+
+def print_metrics(metrics):
+    """Print a concise metric summary."""
+    print("\n" + "=" * 50)
+    print("  VALIDATION METRICS (best.pt)")
+    print("=" * 50)
+    try:
+        box = metrics.box
+        print(f"  mAP50       : {box.map50:.4f}")
+        print(f"  mAP50-95    : {box.map:.4f}")
+        print(f"  Precision   : {box.mp:.4f}")
+        print(f"  Recall      : {box.mr:.4f}")
+    except Exception:
+        # Fallback: print raw results dict
+        print(metrics.results_dict)
+    print("=" * 50 + "\n")
+
+
+def main():
+    print("=" * 50)
+    print("  SH17 YOLOv8m Fine-Tuning")
+    print("=" * 50)
+
+    # Step 1: Build split files
+    print("\n[step 1] Generating train/val split ...")
+    make_split()
+
+    # Step 2: Train
+    print("\n[step 2] Starting training ...")
+    train()
+
+    # Step 3: Validate best weights
+    best_weights = PROJECT / RUN_NAME / "weights" / "best.pt"
+    if best_weights.exists():
+        print("\n[step 3] Running final validation ...")
+        metrics = validate(best_weights)
+        print_metrics(metrics)
+        print(f"Best weights saved at: {best_weights}")
+    else:
+        print(f"[warn] best.pt not found at {best_weights} — check training output.")
+
+
+main()

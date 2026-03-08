@@ -1,0 +1,22 @@
+  # Data directory (large files, not for version control)
+  yolo-finetune/data/
+
+  # Model weights
+  yolo-finetune/model/
+  *.pt
+  *.pth
+
+  # Python
+  __pycache__/
+  *.pyc
+  *.pyo
+
+  # YOLO cache files
+  labels.cache
+  *.cache
+
+  # Scripts excluded from repo (now inside data/)
+  yolo-finetune/data/make_split.py
+  yolo-finetune/data/update_train_test_files.py
+
+
