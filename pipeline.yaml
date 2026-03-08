@@ -1,5 +1,5 @@
 model:
-  path: ../models/best.onnx
+  path: ./yolo-finetune/models/best.onnx
   confidence_threshold: 0.5
   iou_threshold: 0.4
 
