@@ -24,14 +24,11 @@ def apply_hysteresis(vstate, condition, timestamp_ms, enter_ms, exit_ms,
         if not condition:
             vstate["state"] = "grace"
             vstate["condition_false_since_ms"] = timestamp_ms
-        else:
-            return make_violation(track_id, violation_type, bbox, confidence, frame_id, timestamp_ms)
 
     elif s == "grace":
         if condition:
             vstate["state"] = "active"
             vstate["condition_false_since_ms"] = None
-            return make_violation(track_id, violation_type, bbox, confidence, frame_id, timestamp_ms)
         else:
             if timestamp_ms - vstate["condition_false_since_ms"] >= exit_ms:
                 vstate["state"] = "inactive"

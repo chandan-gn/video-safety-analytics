@@ -63,14 +63,14 @@ def preprocess(frame):
     padded[pad_h:pad_h + new_h, pad_w:pad_w + new_w] = resized
 
     tensor = padded.astype(np.float32) / 255.0
-    tensor = tensor.transpose(2, 0, 1)[np.newaxis]  # (1, 3, 640, 640)
+    tensor = tensor.transpose(2, 0, 1)[np.newaxis]  # (1, 3, 320, 320)
 
     return tensor, scale, (pad_w, pad_h)
 
 
 def postprocess(output, scale, pad, frame_id, conf_threshold, iou_threshold):
-    # output shape: (1, 21, 8400) → transpose to (8400, 21)
-    predictions = output[0].T  # (8400, 21)
+    # output shape: (1, 21, 2100) → transpose to (2100, 21)
+    predictions = output[0].T  # (2100, 21)
 
     boxes, scores, class_ids = [], [], []
 
@@ -105,7 +105,7 @@ def postprocess(output, scale, pad, frame_id, conf_threshold, iou_threshold):
 
     detections = []
     for i in indices:
-        x1, y1, x2, y2 = boxes[i]
+        x1, y1, x2, y2 = [float(v) for v in boxes[i]]
         cx = (x1 + x2) / 2
         cy = (y1 + y2) / 2
         class_id = class_ids[i]
@@ -114,7 +114,7 @@ def postprocess(output, scale, pad, frame_id, conf_threshold, iou_threshold):
             class_id=class_id,
             class_name=CLASS_MAP.get(class_id, "unknown"),
             bbox=(x1, y1, x2, y2),
-            confidence=scores[i],
+            confidence=float(scores[i]),
             centroid=(cx, cy),
         ))
 

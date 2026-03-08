@@ -12,11 +12,13 @@ def make_detection(frame_id, class_id, class_name, bbox, confidence, centroid):
 
 
 def make_track(track_id, class_id, class_name, bbox, confidence, frame_id, timestamp_ms):
+    x1, y1, x2, y2 = bbox
     return {
         "track_id": track_id,
         "class_id": class_id,
         "class_name": class_name,
         "bbox": bbox,                           # smoothed each frame
+        "centroid": ((x1 + x2) / 2, (y1 + y2) / 2),
         "confidence": confidence,               # smoothed each frame
         "frames_seen": 1,
         "frames_lost": 0,
