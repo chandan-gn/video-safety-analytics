@@ -1,7 +1,7 @@
 import math
 
-from models import make_violation, make_violation_state
-from rules.no_hardhat import apply_hysteresis
+from models import make_violation_state
+from rules.hysteresis import apply_hysteresis
 
 
 def check(tracks, timestamp_ms, state, cfg):

@@ -1,6 +1,6 @@
-from models import make_violation, make_violation_state
+from models import make_violation_state
 from track import compute_iou
-from rules.no_hardhat import apply_hysteresis
+from rules.hysteresis import apply_hysteresis
 
 ASSOCIATION_IOU = 0.15  # min IoU to associate a vest with a person
 
